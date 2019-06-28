@@ -1,0 +1,94 @@
+<html>
+<head>
+    <script type="text/javascript" src="js/three.min.js"></script>
+    <script type="text/javascript" src="js/OrbitControls.js"></script>
+    <script type="text/javascript" src="js/OBJLoader.js"></script>
+    <script type="text/javascript" src="js/MTLLoader.js"></script>
+    <script type="text/javascript">
+        let scene = null;
+        let camera = null;
+        let controls = null;
+        let renderer = null;
+
+        let mesh = null;
+        let id = null;
+
+        function init() {
+            scene = new THREE.Scene();
+
+            renderer = new THREE.WebGLRenderer({
+                antialias: true,
+                canvas: document.getElementById('mainCanvas')
+            });
+            //renderer.setClearColor(0x000000);
+            camera = new THREE.PerspectiveCamera( 45, window.innerWidth/window.innerHeight, 0.1, 50000 );
+            camera.position.set(5000, 5000, 5000);
+            //camera.lookAt(new THREE.Vector3(0, 2, 0));
+            camera.lookAt(scene.position);
+            scene.add(camera);
+
+            // material loader
+            let mtlLoader = new THREE.MTLLoader();
+            mtlLoader.setPath('obj/');
+            mtlLoader.load('22.mtl', function(materials) {
+                materials.preload();
+                // model loader
+                let objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials(materials);
+                objLoader.setPath('obj/');
+                objLoader.load('22.obj', function(obj) {
+                    obj.traverse(function(child) {
+                        if (child instanceof THREE.Mesh) {
+                            child.material.side = THREE.DoubleSide;
+                        }
+                    });
+                    mesh = obj; //如果注释掉，则不旋转
+                    scene.add(obj);
+                });
+            });
+
+
+            let light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(4000, 4000, 4000);
+            scene.add(light);
+
+            scene.add(new THREE.AmbientLight(0x333333));
+
+            id = setInterval(draw, 20);
+
+            window.addEventListener( 'resize', onWindowResize, false );
+            // controls
+            controls = new THREE.OrbitControls( camera, renderer.domElement);
+            //controls.addEventListener( 'change', render );
+        }
+
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+        }
+
+        function animate() {
+            requestAnimationFrame( animate );
+            controls.update(); // only required if controls.enableDamping = true, or if controls.autoRotate = true
+            render();
+        }
+
+        function render() {
+            renderer.render( scene, camera );
+        }
+
+        function draw() {
+            renderer.render(scene, camera);
+            mesh.rotation.y += 0.01;
+            if (mesh.rotation.y > Math.PI * 2) {
+                mesh.rotation.y -= Math.PI * 2;
+            }
+        }
+    </script>
+</head>
+<body onload="init()">
+    <canvas id="mainCanvas" width="1900" height="900" ></canvas>
+</body>
+</html>

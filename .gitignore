@@ -1,0 +1,37 @@
+.gradle
+.studio
+*.ipr
+*.iml
+*.iws
+build/*
+deploy/*
+modules/*/build/*
+out
+test-run
+.idea/*
+.ideaDataSources/*
+modules/core/db/*
+
+*.class
+*.classpath
+
+# OS generated files # 
+.DS_Store 
+.DS_Store?
+
+# JRebel files #
+rebel.xml
+
+# specific files #
+fis-static/
+target/
+gwt-unitCache/
+widgetsets/
+.idea/
+.settings/
+
+# Package Files #
+*.war
+*.ear
+*.zip
+*.rar
