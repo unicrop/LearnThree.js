@@ -86,13 +86,13 @@
         // material loader
         let mtlLoader = new THREE.MTLLoader();
         mtlLoader.setPath('obj/');
-        mtlLoader.load('22.mtl', function(materials) {
+        mtlLoader.load('1.mtl', function(materials) {
             materials.preload();
             // model loader
             let objLoader = new THREE.OBJLoader();
             objLoader.setMaterials(materials);
             objLoader.setPath('obj/');
-            objLoader.load('22.obj', function(obj) {
+            objLoader.load('1.obj', function(obj) {
                 obj.traverse(function(child) {
                     if (child instanceof THREE.Mesh) {
                         child.material.side = THREE.DoubleSide;
