@@ -13,6 +13,7 @@
 <script type="text/javascript" src="js/OrbitControls.js"></script>
 <script type="text/javascript" src="js/OBJLoader.js"></script>
 <script type="text/javascript" src="js/MTLLoader.js"></script>
+<script type="text/javascript" src="js/dat.gui.min.js"></script>
 <script type="module">
 
     /*******
@@ -25,7 +26,8 @@
      * 动画：animate
      * 绘制：draw
     *******/
-    var renderer, container, camera, scene, light;
+    var renderer, container, camera, scene, light, controls, mesh;
+    var gui;
     init();
     animate();
 
@@ -66,6 +68,21 @@
         scene.background = reflectionCube;
     }
 
+    //初始化dat.GUI简化试验流程
+    function initGui() {
+        //声明一个保存需求修改的相关数据的对象
+        gui = {
+            scaleStep:0.01,
+            rotationStep:0.03,
+            positionStep:0.05
+        };
+        var datGui = new dat.GUI();
+        //将设置属性添加到gui当中，gui.add(对象，属性，最小值，最大值）
+        datGui.add(gui, "scaleStep", 0, 1);
+        datGui.add(gui, "rotationStep", 0, 1);
+        datGui.add(gui, "positionStep", 0, 1);
+    }
+
     function initLight() {
         /*var spotLight = new THREE.PointLight("#ffecb3");
         spotLight.position.set(2000, 2000, 2000);
@@ -101,7 +118,7 @@
                     }
                 });
                 obj.castShadow = true; //投影
-                //mesh = obj; //如果注释掉，则不旋转
+                mesh = obj; //如果注释掉，则不旋转
                 scene.add(obj);
             });
         });
@@ -122,7 +139,7 @@
     }
     
     function initControls() {
-        var controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
         // 如果使用animate方法时，将此函数删除
         //controls.addEventListener( 'change', render );
         // 使动画循环使用时阻尼或自转 意思是否有惯性
@@ -150,6 +167,9 @@
         initLight();
         initModel();
         initControls();
+
+        initGui();
+        animate();
         window.addEventListener( 'resize', onWindowResize, false );
     }
 
@@ -160,12 +180,24 @@
     }
 
     function animate() {
-        requestAnimationFrame( animate );
+        // 更新控制器
+        controls.update();
         render();
+        requestAnimationFrame( animate );
+        // 自动旋转
+        rotateMesh();
     }
 
     function render() {
         renderer.render( scene, camera );
+    }
+
+    function rotateMesh() {
+        //处理mesh的旋转
+        //mesh.rotateX(gui.rotationStep);
+        mesh.rotation.x += gui.rotationStep;
+        mesh.rotation.y += gui.rotationStep;
+        mesh.rotation.z += gui.rotationStep;
     }
 </script>
 </body>
